@@ -43,7 +43,13 @@ def is_valid(maze, r, c):
     cols = len(maze[0])
     return 0 <= r < rows and 0 <= c < cols and maze[r][c] == 0
 
-def draw(screen, font, clock, maze, pos, trail, spike_counts, log, cell_size):
+def load_image(image_path, cell_size):
+    img = pygame.image.load(image_path).convert_alpha()
+    size = int(cell_size * 0.8)
+    img = pygame.transform.smoothscale(img, (size, size))
+    return img
+
+def draw(screen, font, clock, maze, pos, trail, spike_counts, log, cell_size, agent_img):
     rows = len(maze)
     cols = len(maze[0])
     panel_h = 190
@@ -69,11 +75,12 @@ def draw(screen, font, clock, maze, pos, trail, spike_counts, log, cell_size):
         (gc*cell_size+cell_size//5, gr*cell_size+cell_size//5,
          cell_size*3//5, cell_size*3//5), border_radius=6)
 
-    # Draw the agent
     pr, pc = pos
-    pygame.draw.circle(screen, (255, 200, 50),
-        (pc*cell_size + cell_size//2, pr*cell_size + cell_size//2),
-        cell_size//3)
+    img_size = agent_img.get_width()       # square, so width == height
+    offset = (cell_size - img_size) // 2   # centre it in the cell
+    screen.blit(agent_img,
+                (pc * cell_size + offset,
+                pr * cell_size + offset))
 
     # Spike panel
     maze_pixel_h = rows * cell_size
@@ -136,6 +143,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((screen_w, screen_h))
     pygame.display.set_caption(f"Neural Maze Solver ({rows}x{cols})")
+    agent_img = load_image("IMG_3937.JPG", cell_size)
     font  = pygame.font.SysFont("monospace", 14)
     clock = pygame.time.Clock()
 
@@ -171,12 +179,12 @@ def main():
 
                 spike_counts = {i: 0 for i in range(64)}
 
-            draw(screen, font, clock, maze, pos, trail, spike_counts, log, cell_size)
+            draw(screen, font, clock, maze, pos, trail, spike_counts, log, cell_size, agent_img)
             tick_count += 1
 
             if tuple(pos) == GOAL:
                 log.append("We have MADE IT")
-                draw(screen, font, clock, maze, pos, trail, spike_counts, log, cell_size)
+                draw(screen, font, clock, maze, pos, trail, spike_counts, log, cell_size, agent_img)
                 pygame.time.wait(3000)
                 break
 
