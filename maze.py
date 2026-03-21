@@ -125,6 +125,9 @@ def get_maze_size():
             print("Values must be between 3 and 20.")
         except ValueError:
             print("Please enter valid integers.")
+            
+#I want an end game image now
+def draw_end_screen(screen, font, end_img, screen_w, screen_h):
 
 def main():
     rows, cols = get_maze_size()
